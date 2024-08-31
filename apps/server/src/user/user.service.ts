@@ -8,7 +8,7 @@ export class UserService {
 
   async create(
     data: Prisma.UserCreateManyInput,
-    opt: Omit<Prisma.UserCreateArgs, 'data'>,
+    opt: Omit<Prisma.UserCreateArgs, 'data'> = {},
   ) {
     return this.userRepo.create(data, opt);
   }
