@@ -1,16 +1,20 @@
 import { NestFactory } from '@nestjs/core';
 import { AppModule } from './app.module';
-import { TRPCRouter } from './trpc/trpc.router';
+import { ValidationPipe } from '@nestjs/common';
 
 async function bootstrap() {
   const app = await NestFactory.create(AppModule);
 
   app.enableCors();
 
-  // TRPC
-  const trpc = app.get(TRPCRouter);
-  trpc.applyMiddleWare(app);
+  app.enableVersioning();
 
-  await app.listen(3333);
+  app.useGlobalPipes(
+    new ValidationPipe({
+      transform: true,
+    }),
+  );
+
+  await app.listen(process.env.PORT || 3333);
 }
 bootstrap();
