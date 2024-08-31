@@ -1,0 +1,154 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+// Looking for ways to speed up your queries, or scale easily with your serverless or edge functions?
+// Try Prisma Accelerate: https://pris.ly/cli/accelerate-init
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mongodb"
+  url      = env("DATABASE_URL")
+}
+
+enum FriendStatus {
+  PENDING
+  ACCEPTED
+}
+
+enum ChannelRoomType {
+  TEXT
+  VOICE
+}
+
+model User {
+  id               String          @id @default(auto()) @map("_id") @db.ObjectId
+  username         String          @unique()
+  password         String
+  name             String
+  aboutMe          String?
+  imgProfile       String?
+  userFriends      Friend[]        @relation("user")
+  friends          Friend[]        @relation("friend")
+  noteToFriends    FriendNote[]    @relation("noteFromUser")
+  noteFromFriends  FriendNote[]    @relation("noteToUser")
+  createdAt        DateTime        @default(now())
+  updatedAt        DateTime        @updatedAt
+  joinedChannels   ChannelMember[]
+  Channel          Channel[]
+  RoomMessage      RoomMessage[]
+  messageToFriends FriendMessage[] @relation("sendFrom")
+  messages         FriendMessage[] @relation("sendTo")
+}
+
+model Friend {
+  id        String    @id @default(auto()) @map("_id") @db.ObjectId
+  userId    String?   @db.ObjectId
+  user      User?     @relation("user", fields: [userId], references: [id], onDelete: SetNull)
+  friendId  String?   @db.ObjectId
+  friend    User?     @relation("friend", fields: [friendId], references: [id], onDelete: SetNull)
+  isAccept  Boolean   @default(false)
+  isBlock   Boolean   @default(false)
+  blockedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+}
+
+model FriendNote {
+  id             String   @id @default(auto()) @map("_id") @db.ObjectId
+  noteFromUserId String   @db.ObjectId
+  noteFromUser   User     @relation("noteFromUser", fields: [noteFromUserId], references: [id], onDelete: Cascade)
+  noteToUserId   String   @db.ObjectId
+  noteToUser     User     @relation("noteToUser", fields: [noteToUserId], references: [id], onDelete: Cascade)
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+}
+
+model FriendMessage {
+  id         String                 @id @default(auto()) @map("_id") @db.ObjectId
+  message    String
+  sendFromId String?                @db.ObjectId
+  sendFrom   User?                  @relation("sendFrom", fields: [sendFromId], references: [id], onDelete: SetNull)
+  sendToId   String?                @db.ObjectId
+  sendTo     User?                  @relation("sendTo", fields: [sendToId], references: [id], onDelete: SetNull)
+  isDeleted  Boolean                @default(false)
+  sendAt     DateTime               @default(now())
+  editLogs   FriendMessageEditLog[]
+}
+
+model FriendMessageEditLog {
+  id          String        @id @default(auto()) @map("_id") @db.ObjectId
+  messageId   String        @db.ObjectId
+  message     FriendMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  fromMessage String
+  toMessage   String
+  editedAt    DateTime      @default(now())
+}
+
+model Channel {
+  id                String          @id @default(auto()) @map("_id") @db.ObjectId
+  name              String
+  channelProfileImg String?
+  createdAt         DateTime        @default(now())
+  createdById       String          @db.ObjectId
+  createdBy         User            @relation(fields: [createdById], references: [id], onDelete: Cascade)
+  updatedAt         DateTime        @updatedAt
+  members           ChannelMember[]
+  groups            ChannelGroup[]
+  rooms             ChannelRoom[]
+}
+
+model ChannelMember {
+  id        String   @id @default(auto()) @map("_id") @db.ObjectId
+  channelId String   @db.ObjectId
+  channel   Channel  @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  userId    String   @db.ObjectId
+  user      User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+  joinedAt  DateTime @default(now())
+}
+
+model ChannelGroup {
+  id        String        @id @default(auto()) @map("_id") @db.ObjectId
+  channelId String        @db.ObjectId
+  channel   Channel       @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  name      String
+  createdAt DateTime      @default(now())
+  updatedAt DateTime      @updatedAt
+  textRooms ChannelRoom[]
+}
+
+model ChannelRoom {
+  id        String          @id @default(auto()) @map("_id") @db.ObjectId
+  groupId   String          @db.ObjectId
+  group     ChannelGroup    @relation(fields: [groupId], references: [id], onDelete: Cascade)
+  channelId String          @db.ObjectId
+  channel   Channel         @relation(fields: [channelId], references: [id], onDelete: Cascade)
+  type      ChannelRoomType
+  name      String
+  createdAt DateTime        @default(now())
+  updatedAt DateTime        @updatedAt
+  messages  RoomMessage[]
+}
+
+model RoomMessage {
+  id         String               @id @default(auto()) @map("_id") @db.ObjectId
+  roomId     String               @db.ObjectId
+  room       ChannelRoom          @relation(fields: [roomId], references: [id], onDelete: Cascade)
+  message    String
+  sendFromId String?              @db.ObjectId
+  sendFrom   User?                @relation(fields: [sendFromId], references: [id], onDelete: SetNull)
+  isDeleted  Boolean              @default(false)
+  sendAt     DateTime             @default(now())
+  editLogs   RoomMessageEditLog[]
+}
+
+model RoomMessageEditLog {
+  id          String      @id @default(auto()) @map("_id") @db.ObjectId
+  messageId   String      @db.ObjectId
+  message     RoomMessage @relation(fields: [messageId], references: [id], onDelete: Cascade)
+  fromMessage String
+  toMessage   String
+  editedAt    DateTime    @default(now())
+}
