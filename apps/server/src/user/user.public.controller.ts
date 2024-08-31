@@ -6,7 +6,7 @@ import { CreateUserDto } from './dto/create-user.dto';
   version: '1',
   path: 'users',
 })
-export class UserController {
+export class UserPublicController {
   constructor(private readonly userService: UserService) {}
 
   @Post('/create')

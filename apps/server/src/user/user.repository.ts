@@ -19,6 +19,26 @@ export class UserRepository {
     return this.User.findUnique({ ...opt, where: { id } });
   }
 
+  async getByEmailOrPhoneNumber(
+    email: string,
+    phoneNumber: string,
+    opt: Omit<Prisma.UserFindFirstArgs, 'where'> = {},
+  ) {
+    return this.User.findFirst({
+      ...opt,
+      where: {
+        OR: [
+          {
+            email,
+          },
+          {
+            phoneNumber,
+          },
+        ],
+      },
+    });
+  }
+
   async create(
     data: Prisma.UserCreateManyInput,
     opt: Omit<Prisma.UserCreateArgs, 'data'> = {},
