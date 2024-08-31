@@ -20,6 +20,7 @@ import { JwtAuthGuard } from './common/jwt/jwt.guard';
     PrismaModule.forRoot({
       isGlobal: true,
     }),
+    AuthModule,
     UserModule,
     AuthModule,
   ],
