@@ -30,6 +30,8 @@ model User {
   name             String
   aboutMe          String?
   imgProfile       String?
+  email            String          @unique()
+  phoneNumber      String?         @unique()
   userFriends      Friend[]        @relation("user")
   friends          Friend[]        @relation("friend")
   noteToFriends    FriendNote[]    @relation("noteFromUser")
