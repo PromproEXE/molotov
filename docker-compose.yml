@@ -1,10 +1,85 @@
 version: "3"
 services:
-    db:
+    db1:
         image: "mongo"
+        restart: always
+        command:
+            [
+                "--replSet",
+                "rs0",
+                "--bind_ip_all",
+                "--port",
+                "27017",
+                "--keyFile",
+                "/etc/mongodb/pki/keyfile",
+            ]
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        volumes:
+            - ${PWD}/rs_keyfile:/etc/mongodb/pki/keyfile
+            - "db1_data:/data/db"
+            - "db1_config:/data/configdb"
         environment:
             MONGO_INITDB_ROOT_USERNAME: "root"
             MONGO_INITDB_ROOT_PASSWORD: "root"
             MONGO_INITDB_DATABASE: "molotov"
         ports:
             - 27017:27017
+    db2:
+        image: "mongo"
+        restart: always
+        command:
+            [
+                "--replSet",
+                "rs0",
+                "--bind_ip_all",
+                "--port",
+                "27018",
+                "--keyFile",
+                "/etc/mongodb/pki/keyfile",
+            ]
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        volumes:
+            - ${PWD}/rs_keyfile:/etc/mongodb/pki/keyfile
+            - "db2_data:/data/db"
+            - "db2_config:/data/configdb"
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: "root"
+            MONGO_INITDB_ROOT_PASSWORD: "root"
+            MONGO_INITDB_DATABASE: "molotov"
+        ports:
+            - 27018:27018
+    db3:
+        image: "mongo"
+        restart: always
+        command:
+            [
+                "--replSet",
+                "rs0",
+                "--bind_ip_all",
+                "--port",
+                "27019",
+                "--keyFile",
+                "/etc/mongodb/pki/keyfile",
+            ]
+        extra_hosts:
+            - "host.docker.internal:host-gateway"
+        volumes:
+            - ${PWD}/rs_keyfile:/etc/mongodb/pki/keyfile
+            - "db3_data:/data/db"
+            - "db3_config:/data/configdb"
+        environment:
+            MONGO_INITDB_ROOT_USERNAME: "root"
+            MONGO_INITDB_ROOT_PASSWORD: "root"
+            MONGO_INITDB_DATABASE: "molotov"
+        ports:
+            - 27019:27019
+
+volumes:
+    db1_data:
+    db2_data:
+    db3_data:
+    db1_config:
+    db2_config:
+    db3_config:

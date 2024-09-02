@@ -1,6 +1,6 @@
 import { ExtractJwt, Strategy } from 'passport-jwt';
 import { PassportStrategy } from '@nestjs/passport';
-import { Injectable } from '@nestjs/common';
+import { Injectable, UnauthorizedException } from '@nestjs/common';
 import { jwtConstants } from './jwt.constants';
 import { JwtTokenPayload } from './jwt.interface';
 import { UserRepository } from '@server/user/user.repository';
@@ -11,13 +11,16 @@ export class JwtStrategy extends PassportStrategy(Strategy) {
     super({
       jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       ignoreExpiration: false,
-      secretOrKey: jwtConstants.secret,
+      secretOrKey: jwtConstants,
     });
   }
 
   async validate(tokenPayload: JwtTokenPayload) {
     const { userId } = tokenPayload;
     const user = await this.userRepo.getById(userId);
+
+    if (!user) throw new UnauthorizedException('USER NOT FOUND. CHECKMATE');
+
     return user;
   }
 }

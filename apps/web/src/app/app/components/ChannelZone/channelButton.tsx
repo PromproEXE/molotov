@@ -2,16 +2,31 @@ import * as Tooltip from "@radix-ui/react-tooltip"
 import { Avatar } from "@radix-ui/themes"
 import clsx from "clsx"
 
-export default function ChannelButton({ name, isActive }: { name: string; isActive: boolean }) {
-	console.log("asdas")
-	const activeClass = clsx("border-l-4", "border-white", { "border-white": isActive })
+interface PropType {
+	name: string
+	isHover: boolean
+	isActive: boolean
+}
+
+export default function ChannelButton({ name, isActive, isHover }: PropType) {
+	const activeDotClass = clsx(
+		"w-1",
+		"bg-white",
+		"rounded-e-xl",
+		{ "h-7": isHover },
+		{ "h-2": !isHover }
+	)
+
 	return (
-		<div className={activeClass}>
+		<div className="flex items-center">
+			<div className={activeDotClass}></div>
 			<Tooltip.Provider>
 				<Tooltip.Root delayDuration={100}>
 					<Tooltip.Trigger className="w-full flex justify-center">
 						<Avatar
 							size="4"
+							radius="full"
+							className="hover:!rounded-xl"
 							src="https://images.unsplash.com/photo-1502823403499-6ccfcf4fb453?&w=512&h=512&q=70&crop=focalpoint&fp-x=0.5&fp-y=0.3&fp-z=1&fit=crop"
 							fallback="?"
 						></Avatar>

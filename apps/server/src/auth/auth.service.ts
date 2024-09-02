@@ -1,5 +1,6 @@
 import { Injectable } from '@nestjs/common';
 import { JwtService } from '@nestjs/jwt';
+import { Prisma } from '@prisma/client';
 import { JwtTokenPayload } from '@server/common/jwt/jwt.interface';
 import { UserRepository } from '@server/user/user.repository';
 import * as argon2 from 'argon2';
@@ -14,7 +15,7 @@ export class AuthService {
   async login(
     usernameOrEmail: string,
     password: string,
-  ): Promise<string | null> {
+  ): Promise<{ token: string; user: Prisma.UserGetPayload<true> } | null> {
     const user = await this.userRepo.getByEmailOrPhoneNumber(
       usernameOrEmail,
       usernameOrEmail,
@@ -29,7 +30,8 @@ export class AuthService {
         userId: user.id,
         email: user.email,
       };
-      return this.jwtService.sign(tokenPayload);
+      const token = this.jwtService.sign(tokenPayload);
+      return { token, user };
     }
 
     return null;
