@@ -6,7 +6,7 @@ import RoomList from "./components/RoomZone/RoomList"
 import MessageZone from "./components/MessageZone/MessageZone"
 import MemberList from "./components/MemberZone/MemberList"
 
-export default function MainLayout({ children }: { children: Readonly<React.ReactNode> }) {
+export default function MainApp() {
 	return (
 		<SessionProvider>
 			<div className="w-screen h-screen flex">
