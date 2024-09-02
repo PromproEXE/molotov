@@ -4,10 +4,10 @@
   "main": "index.js",
   "scripts": {
     "dev": "pnpm run --parallel dev",
-    "start:frontend": "pnpm run --filter=web start",
-    "start:backend": "pnpm run --filter=server start:prod",
-    "build:frontend": "pnpm run --filter=web build",
-    "build:backend": "pnpm run --filter=server build",
+    "start:web": "pnpm run --filter web start",
+    "start:server": "pnpm run --filter server start:prod",
+    "build:web": "pnpm run --filter web build",
+    "build:server": "pnpm run --filter server build",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
