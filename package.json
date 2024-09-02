@@ -4,6 +4,8 @@
   "main": "index.js",
   "scripts": {
     "dev": "pnpm run --parallel dev",
+    "start:frontend": "pnpm run --filter=web start",
+    "start:backend": "pnpm run --filter=server start",
     "test": "echo \"Error: no test specified\" && exit 1"
   },
   "author": "",
